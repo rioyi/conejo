@@ -10,10 +10,6 @@ def tablero_conejo(matriz_conejo,ancho)
     end
     matriz_conejo << a
   end
-
-  for x in 0..ancho -1
-    matriz_conejo[0][rand(ancho-1)] = "|x|"
-  end
 end
 
 #SOLO PARA TEST
@@ -26,10 +22,33 @@ def tablero_coyote(matriz_coyote,ancho)
     matriz_coyote << a
   end
 end
-
+Җ
 def insertar_conejos(matriz_conejo,numero_conejos)
+  if numero_conejos % 2 == 0
+    hembras = numero_conejos / 2
+    varones = numero_conejos / 2
+  else
+    hembras = numero_conejos / 2
+    varones = numero_conejos - hembras
+  end
 
-
+cuenta_hembra = 0
+cuenta_varones = 0
+indice = 0
+  loop do
+    indice = rand(matriz_conejo[0].length-1)
+      if (matriz_conejo[0][indice] == "| |" && hembras != cuenta_hembra && cuenta_hembra < matriz_conejo[0].length-1) 
+        matriz_conejo[0][indice] = "|♀|"
+        cuenta_hembra += 1
+        indice += 1
+      end
+      if (matriz_conejo[0][indice] == "| |" && varones != cuenta_varones && cuenta_varones < matriz_conejo[0].length-1)      
+        matriz_conejo[0][indice] = "|♂|"
+        cuenta_varones += 1
+        indice += 1
+      end
+    break if (cuenta_varones+cuenta_hembra) == numero_conejos
+  end
 end
 
 #Imprime la matriz
@@ -80,7 +99,10 @@ def menu_inicial(matriz_conejo,matriz_coyote)
       break if ancho >= 5 && ancho < 15
     end
 
-    
+    puts "Ingrese el Numero de conejos"
+    numero_conejos = gets.chomp.to_i
+
+=begin
     loop do
       puts "Ingrese el Numero de conejos"
       numero_conejos = gets.chomp.to_i
@@ -89,11 +111,13 @@ def menu_inicial(matriz_conejo,matriz_coyote)
       end
       break if numero_conejos >= 5 && numero_conejos <= ancho
     end
+=end
   #end
 
 
   tablero_conejo(matriz_conejo,ancho)
   tablero_coyote(matriz_coyote,ancho)
+  insertar_conejos(matriz_conejo,numero_conejos)
 end
 
 #Funcion principal
