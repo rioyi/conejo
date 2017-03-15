@@ -13,11 +13,10 @@ def tablero_conejo(matriz_conejo,ancho)
 
 	for x in 0..ancho -1
 		matriz_conejo[0][rand(ancho-1)] = "|x|"
-
 	end
-
 end
 
+#SOLO PARA TEST
 def tablero_coyote(matriz_coyote,ancho)
 	for i in 0..15
 		a = []
@@ -28,7 +27,12 @@ def tablero_coyote(matriz_coyote,ancho)
 	end
 end
 
-#+Imprime la matriz
+def insertar_conejos(matriz_conejo,numero_conejos)
+
+
+end
+
+#Imprime la matriz
 def imprimir(matriz_conejo)
 	puts ""
 	puts "================================================".colorize(:color => :blue, :background => :white)
@@ -68,16 +72,31 @@ end
 
 #=end
 def menu_inicial(matriz_conejo,matriz_coyote)
-	puts "ingrese el Numoero de columnas"
-	ancho = gets.chomp.to_i
+	ancho = 0
+	numero_conejos = 0
+		loop do
+			puts "ingrese el Numero de columnas (el numero max es 15)"
+			ancho = gets.chomp.to_i
+			break if ancho >= 5 && ancho < 15
+		end
+
+		
+		loop do
+			puts "Ingrese el Numero de conejos"
+			numero_conejos = gets.chomp.to_i
+			if numero_conejos < ancho && numero_conejos > 5			
+				insertar_conejos(matriz_conejo,numero_conejos)
+			end
+			break if numero_conejos >= 5 && numero_conejos <= ancho
+		end
+	#end
+
 
 	tablero_conejo(matriz_conejo,ancho)
 	tablero_coyote(matriz_coyote,ancho)
 end
 
-
-
-
+#Funcion principal
 def main()
 	matriz_conejo = []
 	matriz_coyote = []
