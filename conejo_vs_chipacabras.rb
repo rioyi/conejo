@@ -87,6 +87,7 @@ def imprimir(matriz_conejo)
   puts ""
   for i in 0..matriz_conejo.length - 1
     #print "  #{i} ".colorize(:white)
+    print "#{i} "
     for x in 0..matriz_conejo.length - 1
       if matriz_conejo[i][x] == "|♀|"
         print "  #{matriz_conejo[i][x]}".colorize(:red)
@@ -113,6 +114,7 @@ def imprimir_coyote(matriz_coyote)
   puts ""
   for i in 0..matriz_coyote.length - 1
     #print "  #{i} ".colorize(:white)
+    print "#{i} "
     for x in 0..matriz_coyote.length - 1
       print "  #{matriz_coyote[i][x]}"
     end
@@ -160,7 +162,8 @@ def get_keypressed(matriz_conejo,jugada,matriz_coyote,jugada_coyote)
   system("stty raw -echo")
   t = STDIN.getc
   system("stty -raw echo")
-  move_down(t,matriz_conejo,jugada)
+  move_down(t,matriz_conejo,jugada,matriz_coyote)
+  
   move_arriba(t,matriz_coyote,jugada_coyote)
   #derecha(t,matriz_conejo,jugada,)
   return t
@@ -168,18 +171,32 @@ end
 
 #------------------------------------------------------------------------------
 
-def move_down(t,matriz_conejo,jugada)
+def move_down(t,matriz_conejo,jugada,matriz_coyote)
   #jugada = 0
+  
+
+
   if t == "s"  && jugada < 14
     a1 = []
     a2 = []
+    
     for i in 0..matriz_conejo[jugada].length-1
-      a1 << matriz_conejo[jugada][i]
-      a2 << matriz_conejo[jugada + 1][i]
+      
+        a1 << matriz_conejo[jugada][i]
+        a2 << matriz_conejo[jugada + 1][i]
     end
       linea1 = a1
       liena2 = a2
+      #Desaparecer al muerto
+      for x in 0..linea1.length-1
+        if a1[x] == "|-|".colorize(:red)
+          a1[x]= "| |"
+          matriz_coyote[jugada+1][x] = "|*|"
+          matriz_coyote[jugada][x] = "| |"
 
+          #gets
+        end
+      end
       matriz_conejo[jugada] = liena2
       matriz_conejo[jugada +1] = linea1
   elsif t == "d" && jugada < 14
@@ -216,6 +233,7 @@ def move_down(t,matriz_conejo,jugada)
       end
     break if i < 0
     end
+    #gets
   end        
 end
 
@@ -238,7 +256,8 @@ def move_arriba(t,matriz_coyote,jugada_coyote)
         matriz_coyote[jugada_coyote - 1] = linea1
 
         matriz_coyote[14][3] = "|/|"
-    else
+    elsif jugada_coyote > 0
+      
       for i in 0..matriz_coyote[jugada_coyote].length-1
          a1 << matriz_coyote[jugada_coyote][i] #actual
          a3 << matriz_coyote[jugada_coyote - 1][i] #arriba
@@ -267,10 +286,10 @@ def derecha(matriz_conejo, jugada)
   i = 1
   r = 0
   loop do
-    if matriz[jugada][r] != "| |" && matriz[jugada][i] == "| |"
+    if matriz[jugada][r] != "| |" && matriz_conejo[jugada][i] == "| |"
       aux = matriz[jugada][i]
-      matriz[jugada][i] = matriz[jugada][r]
-      matriz[jugada][r] = aux
+      matriz_conejo[jugada][i] = matriz_conejo[jugada][r]
+      matriz_conejo[jugada][r] = aux
       i += 2
       r += 2
     else
@@ -280,6 +299,72 @@ def derecha(matriz_conejo, jugada)
     break if i > matriz_conejo[0].length-1
   end
 end
+#-------------------------------------------------------------------------------------------
+def choque(matriz_conejo, matriz_coyote, coor_1, jugada, jugada_coyote)
+  conejo = []
+  #coyote = []
+  for i in 0..matriz_conejo[jugada].length
+    a = []
+    if (matriz_conejo[jugada][i] == "|♀|" || matriz_conejo[jugada][i] == "|♂|") && matriz_coyote[jugada][i] == "|*|"
+      matriz_conejo[jugada][i] = "|-|".colorize(:red)
+
+      #a << jugada
+      #a << i
+    end
+    conejo << a
+  end
+=begin
+  coyote = []
+   for i in 0..9
+    a = []
+    if matriz_coyote[jugada_coyote][i] == "|*|"
+      a << jugada_coyote
+      a << i
+    end
+    coyote << a
+  end
+
+  todo = conejo + coyote
+  #comer(conejo,coyote,matriz_conejo)
+=end
+  #return todo
+end
+
+def comer(conejo,coyote,matriz_conejo)
+    for i in 0..conejo.length-1
+      for x in 0..conejo.length-1
+        columna = x
+        fila = i
+        if conejo[i][x] != []
+          matriz_conejo[0][x] = "xD|"
+        end
+      end
+    end
+end
+
+
+
+=begin
+def choque_coyote(matriz_coyote,coor_2, jugada_coyote)
+  coyote = []
+   for i in 0..matriz_coyote[0].length-1
+    a = []
+    if matriz_coyote[jugada_coyote][i] == "|*|"
+      a << jugada_coyote
+      a << i
+    end
+    coyote << a
+  end
+
+  return coyote 
+end
+=end
+
+
+
+
+
+
 
 
 #-------------------------------------------------------------------------------------------
@@ -288,6 +373,8 @@ end
 def main()
   matriz_conejo = []
   matriz_coyote = []
+  coor_1 = []
+  coor_2 = []
   menu_inicial(matriz_conejo,matriz_coyote)
   
   imprimir(matriz_conejo)
@@ -301,16 +388,23 @@ def main()
     
     print "Presione cualquier tecla (s para salir): "
     t = get_keypressed(matriz_conejo,jugada,matriz_coyote,jugada_coyote)
-    if t == "s"
-      puts jugada += 1
+    if t == "s"     
+    
+        puts jugada += 1
     end
     puts jugada_coyote -= 1
+    if jugada_coyote == jugada
+      coor_1 = choque(matriz_conejo, matriz_coyote, coor_1, jugada, jugada_coyote)
+      #coor_2 = choque_coyote(matriz_coyote,coor_2, jugada_coyote)
+    end
     
     system("clear")
     imprimir(matriz_conejo)
     imprimir_coyote(matriz_coyote)
     puts "estas #{jugada}"
     puts "juega coyo#{jugada_coyote}"
+    print coor_1
+    #print coor_2
 
     break if t == "p"
   end
